@@ -2,9 +2,10 @@
 from sklearn.externals import joblib
 import sys
 import os
+from keras.models import load_model
 
 def predict(plot):
-    mod = joblib.load(os.path.dirname(__file__) + '/model.pkl')
+    mod = load_model(os.path.dirname(__file__) + '/my_model.h5', compile=False)
     vect = joblib.load(os.path.dirname(__file__) + '/vect.pkl')
     X_test = vect.transform(plot)
     y_pred = mod.predict_proba(X_test)
