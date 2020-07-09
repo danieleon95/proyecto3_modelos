@@ -36,8 +36,8 @@ class GenresApi(Resource):
         args = parser.parse_args()
     
         return {
-         "result": predict(args.plot)
+         "result": predict([args.plot])
         }, 200
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000, threaded=False)
