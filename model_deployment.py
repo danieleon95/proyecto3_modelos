@@ -2,10 +2,25 @@
 from sklearn.externals import joblib
 import sys
 import os
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+import nltk
+nltk.download('wordnet')
+from nltk.stem import WordNetLemmatizer
+wordnet_lemmatizer = WordNetLemmatizer()
+
+def split_into_lemmas(text):
+    text = text.lower()
+    words = text.split()
+    return [wordnet_lemmatizer.lemmatize(word) for word in words]
+
+dataTraining = pd.read_csv('https://github.com/albahnsen/AdvancedMethodsDataAnalysisClass/raw/master/datasets/dataTraining.zip', encoding='UTF-8', index_col= 0)
 
 def predict(plot):
     mod = joblib.load(os.path.dirname(__file__) + '/model.pkl')
-    vect = joblib.load(os.path.dirname(__file__) + '/vect.pkl')
+    vect = TfidfVectorizer(max_features=5000, strip_accents='unicode', token_pattern=r'\w{2,}', sublinear_tf= True, ngram_range(4, 8), max_df= 0.5, analyzer= split_into_lemmas, stop_words= 'english')
+    X_dtm = vect.fit_transform(dataTraining['plot'])
     X_test = vect.transform(plot)
     y_pred = mod.predict_proba(X_test)
     d = {'p_Action': y_pred[0][1], 'p_Adventure': y_pred[0][1], 'p_Animation': y_pred[0][2], 'p_Biography': y_pred[0][3],
@@ -22,6 +37,6 @@ if __name__ == "__main__":
         
     else:
 
-        p1 = predict(sys.argv[1])
+        p1 = predict([sys.argv[1]])
         
         print('result: ', p1)
